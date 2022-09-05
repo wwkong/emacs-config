@@ -13,8 +13,6 @@
 ;; Config packages
 ;; ----------------------------------------------------------------------------
 
-(package! org-bullets)
-(package! esup)
 (package! dap-mode)
 (package! visual-fill-column)
 

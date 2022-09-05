@@ -273,6 +273,8 @@ Print a random phrase from a dataset to be printed at the bottom of the home pag
 
 #+end_src
 
+*** Dired
+
 ** Keybindings
 
 Since the dashboard is its own major mode, we can reduce the number of keystrokes on some of the most used shortcuts.
@@ -282,12 +284,11 @@ Since the dashboard is its own major mode, we can reduce the number of keystroke
 (defun +doom-dashboard-setup-modified-keymap ()
   (setq +doom-dashboard-mode-map (make-sparse-keymap))
   (map! :map +doom-dashboard-mode-map
-        :desc "Find file" :ne "f" #'find-file
+        :desc "Find file" :ne "f" #'dired
         :desc "Recent files" :ne "r" #'consult-recent-file
         :desc "Config dir" :ne "C" #'doom/open-private-config
         :desc "Open config.org" :ne "c" (cmd! (find-file (expand-file-name "config.org" doom-private-dir)))
         :desc "Open dotfile" :ne "." (cmd! (doom-project-find-file "~/.config/"))
-        :desc "Notes (roam)" :ne "n" #'org-roam-node-find
         :desc "Switch buffer" :ne "b" #'+vertico/switch-workspace-buffer
         :desc "Switch buffers (all)" :ne "B" #'consult-buffer
         :desc "IBuffer" :ne "i" #'ibuffer
@@ -349,18 +350,6 @@ We can  have quote blocks stand out a bit more by making them italic.
 (setq org-fontify-quote-and-verse-blocks t)
 #+end_src
 
-Org files can be rather nice to look at, particularly with some of the customizations here. This comes at a cost however, expensive font-lock. Feeling like you’re typing through molasses in large files is no fun, but there is a way I can defer font-locking when typing to make the experience more responsive.
-
-#+begin_src emacs-lisp
-(defun locally-defer-font-lock ()
-  "Set jit-lock defer and stealth, when buffer is over a certain size."
-  (when (> (buffer-size) 50000)
-    (setq-local jit-lock-defer-time 0.05
-                jit-lock-stealth-time 1)))
-
-(add-hook 'org-mode-hook #'locally-defer-font-lock)
-#+end_src
-
 Text centering, shift select, and no line numbers.
 
 #+begin_src emacs-lisp
@@ -401,8 +390,8 @@ Fix a known bug with the code folding.
 It’s also nice to make use of the Unicode characters for check boxes, and other commands.
 
 #+begin_src emacs-lisp
-(appendq! +ligatures-extra-symbols
-          `(:checkbox      "☐"
+(plist-put! +ligatures-extra-symbols
+            :checkbox      "☐"
             :pending       "◼"
             :checkedbox    "☑"
             :list_property "∷"
@@ -435,12 +424,7 @@ It’s also nice to make use of the Unicode characters for check boxes, and othe
             :begin_export  "⏩"
             :end_export    "⏪"
             :properties    "⚙"
-            :end           "∎"
-            :priority_a   ,(propertize "⚑" 'face 'all-the-icons-red)
-            :priority_b   ,(propertize "⬆" 'face 'all-the-icons-orange)
-            :priority_c   ,(propertize "■" 'face 'all-the-icons-yellow)
-            :priority_d   ,(propertize "⬇" 'face 'all-the-icons-green)
-            :priority_e   ,(propertize "❓" 'face 'all-the-icons-blue)))
+            :end           "∎")
 
 (set-ligatures! 'org-mode
   :merge t
@@ -483,7 +467,6 @@ It’s also nice to make use of the Unicode characters for check boxes, and othe
   :priority_c    "[#C]"
   :priority_d    "[#D]"
   :priority_e    "[#E]")
-(plist-put +ligatures-extra-symbols :name "⁍")
 #+end_src
 
 *** Writeroom

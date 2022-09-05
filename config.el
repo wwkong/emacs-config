@@ -190,12 +190,11 @@
 (defun +doom-dashboard-setup-modified-keymap ()
   (setq +doom-dashboard-mode-map (make-sparse-keymap))
   (map! :map +doom-dashboard-mode-map
-        :desc "Find file" :ne "f" #'find-file
+        :desc "Find file" :ne "f" #'dired
         :desc "Recent files" :ne "r" #'consult-recent-file
         :desc "Config dir" :ne "C" #'doom/open-private-config
         :desc "Open config.org" :ne "c" (cmd! (find-file (expand-file-name "config.org" doom-private-dir)))
         :desc "Open dotfile" :ne "." (cmd! (doom-project-find-file "~/.config/"))
-        :desc "Notes (roam)" :ne "n" #'org-roam-node-find
         :desc "Switch buffer" :ne "b" #'+vertico/switch-workspace-buffer
         :desc "Switch buffers (all)" :ne "B" #'consult-buffer
         :desc "IBuffer" :ne "i" #'ibuffer
@@ -229,14 +228,6 @@
 
 (setq org-fontify-quote-and-verse-blocks t)
 
-(defun locally-defer-font-lock ()
-  "Set jit-lock defer and stealth, when buffer is over a certain size."
-  (when (> (buffer-size) 50000)
-    (setq-local jit-lock-defer-time 0.05
-                jit-lock-stealth-time 1)))
-
-(add-hook 'org-mode-hook #'locally-defer-font-lock)
-
 ;; Remove line numbers.
 (add-hook 'org-mode-hook #'doom-disable-line-numbers-h)
 
@@ -260,8 +251,8 @@
 
 (setq org-cycle-separator-lines -1)
 
-(appendq! +ligatures-extra-symbols
-          `(:checkbox      "☐"
+(plist-put! +ligatures-extra-symbols
+            :checkbox      "☐"
             :pending       "◼"
             :checkedbox    "☑"
             :list_property "∷"
@@ -294,12 +285,7 @@
             :begin_export  "⏩"
             :end_export    "⏪"
             :properties    "⚙"
-            :end           "∎"
-            :priority_a   ,(propertize "⚑" 'face 'all-the-icons-red)
-            :priority_b   ,(propertize "⬆" 'face 'all-the-icons-orange)
-            :priority_c   ,(propertize "■" 'face 'all-the-icons-yellow)
-            :priority_d   ,(propertize "⬇" 'face 'all-the-icons-green)
-            :priority_e   ,(propertize "❓" 'face 'all-the-icons-blue)))
+            :end           "∎")
 
 (set-ligatures! 'org-mode
   :merge t
@@ -342,7 +328,6 @@
   :priority_c    "[#C]"
   :priority_d    "[#D]"
   :priority_e    "[#E]")
-(plist-put +ligatures-extra-symbols :name "⁍")
 
 ;; Reduce the default zoom.
 (setq +zen-text-scale 0.5)
